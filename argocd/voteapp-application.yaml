@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: voteapp
+  namespace: argocd          # ArgoCD itself lives in the argocd namespace
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/anil-ramavath/github-azure-migration-project-by-abhisheak.git
+    targetRevision: main
+    path: k8s-specifications  # folder ArgoCD watches for manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: voting         # all manifests will be deployed into this namespace
+  syncPolicy:
+    automated:
+      prune: true             # remove resources deleted from git
+      selfHeal: true          # revert manual cluster changes
+    syncOptions:
+      - CreateNamespace=true  # auto-create the 'voting' namespace if it doesn't exist
